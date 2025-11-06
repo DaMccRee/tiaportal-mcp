@@ -23,6 +23,9 @@ async function activate(context) {
     // Create output channel
     outputChannel = vscode.window.createOutputChannel('TIA Portal MCP');
     context.subscriptions.push(outputChannel);
+    
+    logDebug(`Extension path: ${extensionPath}`);
+    logDebug(`Server path: ${serverPath}`);
 
     // Create status bar item
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
@@ -40,6 +43,7 @@ async function activate(context) {
         vscode.commands.registerCommand('tiaportal-mcp.checkDependencies', checkDependencies),
         vscode.commands.registerCommand('tiaportal-mcp.startServer', startServer),
         vscode.commands.registerCommand('tiaportal-mcp.stopServer', stopServer),
+        vscode.commands.registerCommand('tiaportal-mcp.forceStopServer', forceStopServer),
         vscode.commands.registerCommand('tiaportal-mcp.restartServer', restartServer),
         vscode.commands.registerCommand('tiaportal-mcp.openSettings', openSettings),
         vscode.commands.registerCommand('tiaportal-mcp.showLogs', showLogs),
@@ -55,13 +59,11 @@ async function activate(context) {
     );
 
     // Automatically update MCP configuration if it exists
-    updateMcpConfigIfExists(serverPath);
+    const mcpConfigUpdated = updateMcpConfigIfExists(serverPath);
 
-    // Check dependencies on startup if configured
+    // Always run dependency check after MCP config update or on startup
     const config = vscode.workspace.getConfiguration('tiaportalMcp');
-    if (config.get('checkDependenciesOnStartup')) {
-        await checkDependencies();
-    }
+    await checkDependencies();
 
     // Auto-start server if configured
     if (config.get('autoStart')) {
@@ -90,6 +92,7 @@ function deactivate() {
 
 function addMcpConfig(serverPath) {
     if (process.platform !== 'win32') {
+        logDebug('Skipping MCP config - not on Windows platform');
         return; // Nothing to do on other platforms
     }
 
@@ -100,6 +103,8 @@ function addMcpConfig(serverPath) {
         vscode.window.showWarningMessage('No workspace folder found. Please open a workspace first.');
         return;
     }
+    
+    logDebug(`Workspace folder: ${workspaceFolder}`);
 
     const vscodeDir = path.join(workspaceFolder, '.vscode');
     const mcpConfigPath = path.join(vscodeDir, 'mcp.json');
@@ -131,6 +136,8 @@ function addMcpConfig(serverPath) {
     const tiaMajorVersion = config.get('tiaMajorVersion') || 19;
     const loggingLevel = config.get('loggingLevel') || 2;
     const tiaPortalPath = config.get('tiaPortalPath') || 'C:\\Program Files\\Siemens\\Automation\\Portal V19';
+
+    logDebug(`Config - TIA Version: ${tiaMajorVersion}, Logging Level: ${loggingLevel}, TIA Path: ${tiaPortalPath}`);
 
     const serverName = 'tiaportal-mcp-v19';
     mcpConfig.servers[serverName] = {
@@ -210,6 +217,7 @@ function updateMcpConfigIfExists(serverPath) {
             fs.writeFileSync(mcpConfigPath, JSON.stringify(mcpConfig, null, 2), 'utf8');
             logInfo(`MCP server "${serverName}" successfully updated in: ${mcpConfigPath}`);
             logInfo(`Please restart VS Code for Copilot to detect the updated configuration.`);
+            logInfo('');
         } catch (error) {
             logError('Error writing MCP configuration:', error);
         }
@@ -259,6 +267,7 @@ function removeMcpConfig() {
 
 async function checkDependencies() {
     logInfo('=== Checking Dependencies ===');
+    logDebug('Starting dependency check');
     outputChannel.show();
 
     const results = {
@@ -268,6 +277,8 @@ async function checkDependencies() {
         envVariable: await checkEnvVariable(),
         serverExecutable: await checkServerExecutable()
     };
+    
+    logDebug(`Dependency check results: ${JSON.stringify(results, null, 2)}`);
 
     // Display results
     const allGood = Object.values(results).every(r => r.status);
@@ -275,6 +286,7 @@ async function checkDependencies() {
     if (allGood) {
         vscode.window.showInformationMessage('✅ All dependencies are satisfied!');
         logInfo('✅ All dependencies check passed');
+        logInfo('');
     } else {
         const failedChecks = Object.entries(results)
             .filter(([_, v]) => !v.status)
@@ -291,7 +303,11 @@ async function checkDependencies() {
         });
         
         logError(`❌ Dependency check failed:\n${failedChecks}`);
+        logInfo('');
     }
+
+    // Check if server is running (regardless of dependency status)
+    await checkServerRunning();
 
     statusTreeDataProvider.updateStatus(results);
     return results;
@@ -391,17 +407,59 @@ async function checkEnvVariable() {
 }
 
 async function checkServerExecutable() {
-    const serverPath = getServerPath();
+    logInfo('Checking server executable...');
     
-    logInfo(`Checking server executable: ${serverPath}`);
-    
-    if (!fs.existsSync(serverPath)) {
-        logError(`❌ Server executable not found: ${serverPath}`);
-        return { status: false, message: 'TiaMcpServer.exe not found' };
+    try {
+        const serverPath = getServerPath();
+        
+        logInfo(`Server executable path: ${serverPath}`);
+        
+        if (!fs.existsSync(serverPath)) {
+            logError(`❌ Server executable not found: ${serverPath}`);
+            return { status: false, message: 'TiaMcpServer.exe not found' };
+        }
+        
+        logInfo(`✅ Server executable found`);
+        return { status: true, message: 'Server executable available' };
+    } catch (error) {
+        logError(`❌ Error checking server executable: ${error.message}`);
+        logDebug(`Error stack: ${error.stack}`);
+        return { status: false, message: `Error: ${error.message}` };
     }
+}
+
+async function checkServerRunning() {
+    logInfo('Checking if MCP Server is running...');
     
-    logInfo(`✅ Server executable found`);
-    return { status: true, message: 'Server executable available' };
+    try {
+        // Set a timeout for the command
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), 3000)
+        );
+        
+        const execPromiseWithTimeout = Promise.race([
+            execPromise('tasklist /FI "IMAGENAME eq TiaMcpServer.exe" /NH'),
+            timeoutPromise
+        ]);
+        
+        const { stdout } = await execPromiseWithTimeout;
+        
+        // Check if the output contains TiaMcpServer.exe
+        if (stdout.toLowerCase().includes('tiamcpserver.exe')) {
+            logInfo('✅ MCP Server is currently running');
+            return { status: true, message: 'Server is running' };
+        } else {
+            logInfo('ℹ️ MCP Server is not running');
+            return { status: false, message: 'Server is not running' };
+        }
+    } catch (error) {
+        if (error.message === 'Timeout') {
+            logWarning('⚠️ Server status check timed out (skipping)');
+        } else {
+            logWarning(`⚠️ Could not check server status: ${error.message}`);
+        }
+        return { status: false, message: 'Could not check server status' };
+    }
 }
 
 // ========== Server Management ==========
@@ -409,46 +467,64 @@ async function checkServerExecutable() {
 async function startServer() {
     if (serverProcess) {
         vscode.window.showWarningMessage('Server is already running');
+        logDebug('Start server called but server is already running');
         return;
     }
 
-    // Check dependencies first
-    const depCheck = await checkDependencies();
-    const criticalDeps = [depCheck.tiaPortal, depCheck.dotNet, depCheck.serverExecutable];
-    
-    if (!criticalDeps.every(d => d.status)) {
-        vscode.window.showErrorMessage('Cannot start server: critical dependencies missing');
-        return;
-    }
-
-    const serverPath = getServerPath();
-    const config = vscode.workspace.getConfiguration('tiaportalMcp');
-    const tiaMajorVersion = config.get('tiaMajorVersion');
-    const loggingLevel = config.get('loggingLevel');
-
-    const args = [
-        '--tia-major-version', tiaMajorVersion.toString(),
-        '--logging', loggingLevel.toString()
-    ];
-
-    logInfo(`Starting MCP Server: ${serverPath} ${args.join(' ')}`);
-    updateStatusBar('Starting...', true);
+    logInfo('Attempting to start MCP Server...');
+    logDebug('Starting server process...');
 
     try {
+        // Check dependencies first
+        const depCheck = await checkDependencies();
+        const criticalDeps = [depCheck.tiaPortal, depCheck.dotNet, depCheck.serverExecutable];
+        
+        if (!criticalDeps.every(d => d.status)) {
+            const failedDeps = [
+                !depCheck.tiaPortal.status ? 'TIA Portal' : null,
+                !depCheck.dotNet.status ? '.NET Framework' : null,
+                !depCheck.serverExecutable.status ? 'Server Executable' : null
+            ].filter(d => d !== null).join(', ');
+            
+            vscode.window.showErrorMessage(`Cannot start server: missing dependencies - ${failedDeps}`);
+            logError(`Critical dependencies check failed: ${failedDeps}`);
+            updateStatusBar('Error - Missing Dependencies', false);
+            return;
+        }
+
+        const serverPath = getServerPath();
+        const config = vscode.workspace.getConfiguration('tiaportalMcp');
+        const tiaMajorVersion = config.get('tiaMajorVersion');
+        const loggingLevel = config.get('loggingLevel');
+
+        const args = [
+            '--tia-major-version', tiaMajorVersion.toString(),
+            '--logging', loggingLevel.toString()
+        ];
+
+        logInfo(`Starting MCP Server: ${serverPath}`);
+        logInfo(`Arguments: ${args.join(' ')}`);
+        logDebug(`Environment: TiaPortalLocation=${config.get('tiaPortalPath')}`);
+        updateStatusBar('Starting...', true);
+
         serverProcess = spawn(serverPath, args, {
             env: {
                 ...process.env,
                 TiaPortalLocation: config.get('tiaPortalPath')
             }
         });
+        
+        logDebug(`Server process spawned with PID: ${serverProcess.pid}`);
 
         serverProcess.stdout.on('data', (data) => {
             const message = data.toString();
             logInfo(`[STDOUT] ${message}`);
+            logDebug(`Server stdout raw: ${JSON.stringify(message)}`);
         });
 
         serverProcess.stderr.on('data', (data) => {
             const message = data.toString();
+            logDebug(`[STDERR] ${message}`);
             if (config.get('showDetailedLogs')) {
                 logInfo(`[STDERR] ${message}`);
             }
@@ -456,6 +532,7 @@ async function startServer() {
 
         serverProcess.on('error', (error) => {
             logError(`Server error: ${error.message}`);
+            logDebug(`Server error stack: ${error.stack}`);
             updateStatusBar('Error', false);
             vscode.window.showErrorMessage(`MCP Server error: ${error.message}`);
             serverProcess = null;
@@ -463,6 +540,7 @@ async function startServer() {
 
         serverProcess.on('close', (code) => {
             logInfo(`Server process exited with code ${code}`);
+            logDebug(`Server close event, code: ${code}, killed: ${serverProcess?.killed}`);
             updateStatusBar('Stopped', false);
             serverProcess = null;
             
@@ -478,10 +556,16 @@ async function startServer() {
             updateStatusBar('Running', true);
             vscode.window.showInformationMessage('TIA Portal MCP Server started successfully');
             logInfo('✅ Server started successfully');
+            logDebug(`Server PID: ${serverProcess.pid}`);
+        } else {
+            logError('Server process was killed or failed to start');
+            updateStatusBar('Error', false);
+            serverProcess = null;
         }
 
     } catch (error) {
         logError(`Failed to start server: ${error.message}`);
+        logDebug(`Start server error stack: ${error.stack}`);
         updateStatusBar('Error', false);
         vscode.window.showErrorMessage(`Failed to start MCP Server: ${error.message}`);
         serverProcess = null;
@@ -491,10 +575,12 @@ async function startServer() {
 async function stopServer() {
     if (!serverProcess) {
         vscode.window.showInformationMessage('Server is not running');
+        logDebug('Stop server called but server is not running');
         return;
     }
 
     logInfo('Stopping MCP Server...');
+    logDebug(`Stopping server PID: ${serverProcess.pid}`);
     updateStatusBar('Stopping...', false);
 
     try {
@@ -505,7 +591,51 @@ async function stopServer() {
         logInfo('✅ Server stopped');
     } catch (error) {
         logError(`Error stopping server: ${error.message}`);
+        logDebug(`Stop server error stack: ${error.stack}`);
         vscode.window.showErrorMessage(`Error stopping server: ${error.message}`);
+    }
+}
+
+async function forceStopServer() {
+    logInfo('Force stopping all TiaMcpServer processes...');
+    logDebug('Using taskkill to force stop TiaMcpServer.exe');
+    updateStatusBar('Force Stopping...', false);
+
+    try {
+        // Use taskkill to force stop all TiaMcpServer.exe processes
+        const { stdout, stderr } = await execPromise('taskkill /F /IM TiaMcpServer.exe /T');
+        
+        logInfo('Force stop command executed');
+        logDebug(`taskkill stdout: ${stdout}`);
+        if (stderr) {
+            logDebug(`taskkill stderr: ${stderr}`);
+        }
+
+        // Clear the server process reference
+        serverProcess = null;
+        updateStatusBar('Stopped', false);
+        
+        // Check if process was found and killed
+        if (stdout.toLowerCase().includes('success')) {
+            vscode.window.showInformationMessage('TIA Portal MCP Server forcefully stopped');
+            logInfo('✅ Server forcefully stopped');
+        } else if (stdout.toLowerCase().includes('not found') || stderr.toLowerCase().includes('not found')) {
+            vscode.window.showInformationMessage('No TiaMcpServer process found running');
+            logInfo('ℹ️ No server process found to stop');
+        }
+        
+    } catch (error) {
+        // taskkill returns error if process not found, which is actually OK
+        if (error.message.includes('not found') || error.message.includes('找不到')) {
+            serverProcess = null;
+            updateStatusBar('Stopped', false);
+            vscode.window.showInformationMessage('No TiaMcpServer process found running');
+            logInfo('ℹ️ No server process found to stop');
+        } else {
+            logError(`Error force stopping server: ${error.message}`);
+            logDebug(`Force stop error stack: ${error.stack}`);
+            vscode.window.showErrorMessage(`Error force stopping server: ${error.message}`);
+        }
     }
 }
 
@@ -565,13 +695,36 @@ function getServerPath() {
     const config = vscode.workspace.getConfiguration('tiaportalMcp');
     const customPath = config.get('serverPath');
     
+    logDebug(`Custom server path from config: ${customPath || '(empty)'}`);
+    
     if (customPath && fs.existsSync(customPath)) {
+        logDebug(`Using custom server path: ${customPath}`);
         return customPath;
     }
     
-    // Use bundled server
-    const extensionPath = vscode.extensions.getExtension('siemens-automation.tiaportal-mcp-v19')?.extensionPath;
-    return path.join(extensionPath, 'srv', 'net48', 'TiaMcpServer.exe');
+    // Use bundled server - try to get extension path
+    const extensionId = 'liangxuewen.tiaportal-mcp-v19';
+    const extension = vscode.extensions.getExtension(extensionId);
+    
+    if (!extension) {
+        logError(`Extension not found with ID: ${extensionId}`);
+        logDebug(`Available extensions: ${vscode.extensions.all.map(e => e.id).join(', ')}`);
+        throw new Error(`Extension ${extensionId} not found`);
+    }
+    
+    const extensionPath = extension.extensionPath;
+    const bundledPath = path.join(extensionPath, 'srv', 'net48', 'TiaMcpServer.exe');
+    
+    logDebug(`Extension path: ${extensionPath}`);
+    logDebug(`Bundled server path: ${bundledPath}`);
+    
+    if (!fs.existsSync(bundledPath)) {
+        logError(`Server executable not found at: ${bundledPath}`);
+        throw new Error(`Server executable not found at: ${bundledPath}`);
+    }
+    
+    logDebug(`✅ Server executable found at: ${bundledPath}`);
+    return bundledPath;
 }
 
 function logInfo(message) {
@@ -587,6 +740,16 @@ function logWarning(message) {
 function logError(message) {
     const timestamp = new Date().toLocaleTimeString();
     outputChannel.appendLine(`[${timestamp}] ❌ ${message}`);
+}
+
+function logDebug(message) {
+    const config = vscode.workspace.getConfiguration('tiaportalMcp');
+    const showDetailedLogs = config.get('showDetailedLogs');
+    
+    if (showDetailedLogs) {
+        const timestamp = new Date().toLocaleTimeString();
+        outputChannel.appendLine(`[${timestamp}] 🔍 DEBUG: ${message}`);
+    }
 }
 
 // ========== Tree Data Provider ==========
@@ -656,6 +819,9 @@ class SettingsViewProvider {
                     break;
                 case 'stopServer':
                     await stopServer();
+                    break;
+                case 'forceStopServer':
+                    await forceStopServer();
                     break;
                 case 'restartServer':
                     await restartServer();
@@ -769,6 +935,7 @@ class SettingsViewProvider {
         <div class="section-title">🔧 Quick Actions</div>
         <button onclick="startServer()">Start Server</button>
         <button onclick="stopServer()" class="secondary">Stop Server</button>
+        <button onclick="forceStopServer()" class="secondary" style="background: var(--vscode-errorForeground); color: white;" title="Force kill all TiaMcpServer.exe processes">Force Stop</button>
     </div>
 
     <div class="section">
@@ -888,6 +1055,10 @@ class SettingsViewProvider {
 
         function stopServer() {
             vscode.postMessage({ type: 'stopServer' });
+        }
+
+        function forceStopServer() {
+            vscode.postMessage({ type: 'forceStopServer' });
         }
 
         function restartServer() {

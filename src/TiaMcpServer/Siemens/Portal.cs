@@ -1062,98 +1062,128 @@ namespace TiaMcpServer.Siemens
             }
         }
 
-        public bool ImportBlock(string softwarePath, string groupPath, string importPath)
+        public (bool success, string errorMessage) ImportBlock(string softwarePath, string groupPath, string importPath)
         {
             _logger?.LogInformation($"Importing block from path: {importPath}");
 
             if (IsProjectNull())
             {
-                return false;
+                return (false, "Project is null or not opened");
             }
 
             var softwareContainer = GetSoftwareContainer(softwarePath);
-            if (softwareContainer?.Software is PlcSoftware plcSoftware)
+            if (softwareContainer?.Software is not PlcSoftware plcSoftware)
             {
-                var blockGroup = plcSoftware?.BlockGroup;
-
-                if (blockGroup != null)
-                {
-
-                    var group = GetPlcBlockGroupByPath(softwarePath, groupPath);
-                    if (group == null)
-                    {
-                        return false;
-                    }
-
-                    try
-                    {
-                        // Correct the argument type by using FileInfo instead of FileStream  
-                        var fileInfo = new FileInfo(importPath);
-                        if (fileInfo.Exists)
-                        {
-                            var list = group.Blocks.Import(fileInfo, ImportOptions.Override);
-                            if (list != null && list.Count > 0)
-                            {
-                                return true;
-                            }
-                        }
-
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                }
+                return (false, $"Software not found at path: {softwarePath}");
             }
 
-            return false;
+            var blockGroup = plcSoftware?.BlockGroup;
+            if (blockGroup == null)
+            {
+                return (false, "Block group is null");
+            }
+
+            var group = GetPlcBlockGroupByPath(softwarePath, groupPath);
+            if (group == null)
+            {
+                return (false, $"Block group not found at path: {groupPath}");
+            }
+
+            try
+            {
+                // Correct the argument type by using FileInfo instead of FileStream  
+                var fileInfo = new FileInfo(importPath);
+                if (!fileInfo.Exists)
+                {
+                    return (false, $"Import file does not exist: {importPath}");
+                }
+
+                var list = group.Blocks.Import(fileInfo, ImportOptions.Override);
+                if (list == null)
+                {
+                    return (false, "Import returned null - possible incompatibility or missing dependencies");
+                }
+                
+                if (list.Count == 0)
+                {
+                    return (false, "Import returned empty list - block may already exist or import failed silently");
+                }
+
+                _logger?.LogInformation($"Successfully imported {list.Count} block(s)");
+                return (true, $"Successfully imported {list.Count} block(s)");
+            }
+            catch (Exception ex)
+            {
+                var errorMsg = $"Exception during import: {ex.GetType().Name} - {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMsg += $" | Inner: {ex.InnerException.Message}";
+                }
+                _logger?.LogError(ex, "Error importing block");
+                return (false, errorMsg);
+            }
         }
 
-        public bool ImportType(string softwarePath, string groupPath, string importPath)
+        public (bool success, string errorMessage) ImportType(string softwarePath, string groupPath, string importPath)
         {
             _logger?.LogInformation($"Importing type from path: {importPath}");
 
-            var success = false;
-
             if (IsProjectNull())
             {
-                return success;
+                return (false, "Project is null or not opened");
             }
 
             var softwareContainer = GetSoftwareContainer(softwarePath);
-            if (softwareContainer?.Software is PlcSoftware plcSoftware)
+            if (softwareContainer?.Software is not PlcSoftware plcSoftware)
             {
-                var typeGroup = plcSoftware?.TypeGroup;
-
-                if (typeGroup != null)
-                {
-                    var group = GetPlcTypeGroupByPath(softwarePath, groupPath);
-                    if (group == null)
-                    {
-                        return false;
-                    }
-
-                    try
-                    {
-                        // Correct the argument type by using FileInfo instead of FileStream  
-                        var fileInfo = new FileInfo(importPath);
-                        if (fileInfo.Exists)
-                        {
-                            var list = group.Types.Import(fileInfo, ImportOptions.Override);
-                            if (list != null && list.Count > 0)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        return false;
-                    }
-                }
+                return (false, $"Software not found at path: {softwarePath}");
             }
 
-            return success;
+            var typeGroup = plcSoftware?.TypeGroup;
+            if (typeGroup == null)
+            {
+                return (false, "Type group is null");
+            }
+
+            var group = GetPlcTypeGroupByPath(softwarePath, groupPath);
+            if (group == null)
+            {
+                return (false, $"Type group not found at path: {groupPath}");
+            }
+
+            try
+            {
+                // Correct the argument type by using FileInfo instead of FileStream  
+                var fileInfo = new FileInfo(importPath);
+                if (!fileInfo.Exists)
+                {
+                    return (false, $"Import file does not exist: {importPath}");
+                }
+
+                var list = group.Types.Import(fileInfo, ImportOptions.Override);
+                if (list == null)
+                {
+                    return (false, "Import returned null - possible incompatibility or missing dependencies");
+                }
+                
+                if (list.Count == 0)
+                {
+                    return (false, "Import returned empty list - type may already exist or import failed silently");
+                }
+
+                _logger?.LogInformation($"Successfully imported {list.Count} type(s)");
+                return (true, $"Successfully imported {list.Count} type(s)");
+            }
+            catch (Exception ex)
+            {
+                var errorMsg = $"Exception during import: {ex.GetType().Name} - {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMsg += $" | Inner: {ex.InnerException.Message}";
+                }
+                _logger?.LogError(ex, "Error importing type");
+                return (false, errorMsg);
+            }
         }
 
         public IEnumerable<PlcBlock>? ExportBlocks(string softwarePath, string exportPath, string regexName = "", bool preservePath = false)

@@ -1016,11 +1016,12 @@ namespace TiaMcpServer.ModelContextProtocol
         {
             try
             {
-                if (Portal.ImportBlock(softwarePath, groupPath, importPath))
+                var (success, errorMessage) = Portal.ImportBlock(softwarePath, groupPath, importPath);
+                if (success)
                 {
                     return new ResponseImportBlock
                     {
-                        Message = $"Block imported from '{importPath}' to '{groupPath}'",
+                        Message = $"Block imported from '{importPath}' to '{groupPath}'. {errorMessage}",
                         Meta = new JsonObject
                         {
                             ["timestamp"] = DateTime.Now,
@@ -1030,7 +1031,7 @@ namespace TiaMcpServer.ModelContextProtocol
                 }
                 else
                 {
-                    throw new McpException($"Failed importing block from '{importPath}' to '{groupPath}'", McpErrorCode.InternalError);
+                    throw new McpException($"Failed importing block from '{importPath}' to '{groupPath}': {errorMessage}", McpErrorCode.InternalError);
                 }
             }
             catch (Exception ex) when (ex is not McpException)
@@ -1395,11 +1396,12 @@ namespace TiaMcpServer.ModelContextProtocol
         {
             try
             {
-                if (Portal.ImportType(softwarePath, groupPath, importPath))
+                var (success, errorMessage) = Portal.ImportType(softwarePath, groupPath, importPath);
+                if (success)
                 {
                     return new ResponseImportType
                     {
-                        Message = $"Type imported from '{importPath}' to '{groupPath}'",
+                        Message = $"Type imported from '{importPath}' to '{groupPath}'. {errorMessage}",
                         Meta = new JsonObject
                         {
                             ["timestamp"] = DateTime.Now,
@@ -1409,7 +1411,7 @@ namespace TiaMcpServer.ModelContextProtocol
                 }
                 else
                 {
-                    throw new McpException($"Failed importing type from '{importPath}' to '{groupPath}'", McpErrorCode.InternalError);
+                    throw new McpException($"Failed importing type from '{importPath}' to '{groupPath}': {errorMessage}", McpErrorCode.InternalError);
                 }
             }
             catch (Exception ex) when (ex is not McpException)
