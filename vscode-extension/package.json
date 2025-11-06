@@ -2,7 +2,7 @@
   "name": "tiaportal-mcp-v19",
   "displayName": "TIA Portal V19 MCP Server",
   "description": "Model Context Protocol server for TIA Portal V19 with automatic dependency detection and monitoring",
-  "version": "1.0.0",
+  "version": "0.2.1",
   "publisher": "DaMccRee",
   "engines": {
     "vscode": "^1.85.0"
