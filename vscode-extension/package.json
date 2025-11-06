@@ -2,8 +2,8 @@
   "name": "tiaportal-mcp-v19",
   "displayName": "TIA Portal V19 MCP Server",
   "description": "Model Context Protocol server for TIA Portal V19 with automatic dependency detection and monitoring",
-  "version": "0.2.1",
-  "publisher": "siemens-automation",
+  "version": "1.0.0",
+  "publisher": "DaMccRee",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -150,16 +150,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/tiaportal-mcp-v19.git"
+    "url": "git+https://github.com/DaMccRee/tiaportal-mcp-v19.git"
   },
   "license": "MIT",
   "directories": {
     "doc": "docs"
   },
-  "author": "",
+  "author": "DaMccRee",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/yourusername/tiaportal-mcp-v19/issues"
+    "url": "https://github.com/DaMccRee/tiaportal-mcp-v19/issues"
   },
-  "homepage": "https://github.com/yourusername/tiaportal-mcp-v19#readme"
+  "homepage": "https://github.com/DaMccRee/tiaportal-mcp-v19#readme"
 }

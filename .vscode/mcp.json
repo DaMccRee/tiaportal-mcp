@@ -1,7 +1,7 @@
 {
   "servers": {
     "tiaportal-mcp-v19": {
-      "command": "c:\\Users\\DHY\\.vscode\\extensions\\siemens-automation.tiaportal-mcp-v19-0.2.1\\srv\\net48\\TiaMcpServer.exe",
+      "command": "c:\\Users\\DHY\\.vscode\\extensions\\damccree.tiaportal-mcp-v19-1.0.0\\srv\\net48\\TiaMcpServer.exe",
       "args": [
         "--tia-major-version",
         "19",

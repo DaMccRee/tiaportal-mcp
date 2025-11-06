@@ -131,3 +131,4 @@ C:\Users\DHY\Documents\tiaportal-mcp-v19\src\TiaMcpServer\obj\Release\net48\TiaM
 C:\Users\DHY\Documents\tiaportal-mcp-v19\src\TiaMcpServer\obj\Release\net48\TiaMcpSe.F22D1897.Up2Date
 C:\Users\DHY\Documents\tiaportal-mcp-v19\src\TiaMcpServer\obj\Release\net48\TiaMcpServer.exe
 C:\Users\DHY\Documents\tiaportal-mcp-v19\src\TiaMcpServer\obj\Release\net48\TiaMcpServer.pdb
+C:\Users\DHY\Documents\tiaportal-mcp-v19\src\TiaMcpServer\obj\Release\net48\TiaMcpServer.sourcelink.json

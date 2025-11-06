@@ -1,8 +1,15 @@
 # TIA Portal V19 MCP Server - VS Code Extension
 
-基于 TIA Portal V19 的 Model Context Protocol (MCP) 服务器 VS Code 扩展。
+基于 TIA Portal V19 的 Model Context Protocol (MCP) 服务器 VS Code 扩展，支持通过 AI 助手操作 TIA Portal 项目。
 
-## ✨ 功能特性
+## ✨ 新增功能 (v1.0.0)
+
+- ✅ **创建新项目** - 使用 `CreateProject` 工具创建全新的 TIA Portal 项目
+- ✅ **获取编译信息** - 编译时获取详细的错误、警告信息和编译器消息
+- ✅ **完整的项目管理** - 支持创建、打开、保存、关闭项目的完整生命周期
+- ✅ **程序块导入导出** - 支持 XML 格式和 SIMATIC SD Documents 格式 (.s7dcl/.s7res)
+
+## ✨ 核心功能特性
 
 - 🔍 **自动依赖检测** - 自动检测 TIA Portal V19、.NET Framework 4.8、用户组权限等
 - ⚙️ **可视化配置界面** - 侧边栏提供友好的参数设置面板
@@ -10,6 +17,7 @@
 - 🚀 **一键启动/停止** - 快捷命令管理 MCP 服务器
 - 🔧 **自动修复建议** - 检测到问题时提供修复指导
 - 📦 **内置服务器** - 扩展已包含编译好的 TiaMcpServer.exe
+- 🤖 **AI 助手集成** - 通过 MCP 协议让 AI 助手操作 TIA Portal
 
 ## 🚀 快速开始
 
@@ -19,12 +27,12 @@
 
    ```bash
    # 方法 1: 使用命令行
-   code --install-extension tiaportal-mcp-v19-0.1.0.vsix
+   code --install-extension tiaportal-mcp-v19-1.0.0.vsix
 
    # 方法 2: 在 VS Code 中
    # 打开 Extensions 视图 (Ctrl+Shift+X)
    # 点击 "..." 菜单 -> Install from VSIX...
-   # 选择 tiaportal-mcp-v19-0.1.0.vsix 文件
+   # 选择 tiaportal-mcp-v19-1.0.0.vsix 文件
    ```
 
 2. **重新加载 VS Code**
@@ -182,13 +190,13 @@ npm install
 # 确保 srv\net48 目录包含所有必需的文件
 npx @vscode/vsce package
 
-# 生成 tiaportal-mcp-v19-0.1.0.vsix
+# 生成 tiaportal-mcp-v19-1.0.0.vsix
 ```
 
 ### 安装本地 VSIX
 
 ```bash
-code --install-extension tiaportal-mcp-v19-0.1.0.vsix
+code --install-extension tiaportal-mcp-v19-1.0.0.vsix
 ```
 
 ## 📁 文件结构
@@ -241,12 +249,33 @@ MCP 服务器提供以下工具 (完整列表请参考主项目 README):
 
 MIT License
 
-## 🔗 相关链接
+## � 致谢
 
+本项目基于 [heilingbrunner/tiaportal-mcp](https://github.com/heilingbrunner/tiaportal-mcp) 进行开发和增强。
+
+特别感谢原作者 [@heilingbrunner](https://github.com/heilingbrunner) 创建了优秀的 TIA Portal MCP 服务器基础框架。
+
+### 主要改进和增强
+
+在原项目基础上，本版本增加了以下功能：
+
+- ✨ 支持创建新的 TIA Portal 项目 (`CreateProject`)
+- ✨ 获取详细的编译器消息和诊断信息(重要)
+- ✨ 改进的错误处理和日志记录
+- ✨ 完善的 VSCode 扩展集成
+- ✨ 自动依赖检测和配置向导
+
+## �🔗 相关链接
+
+- **本项目仓库**: [https://github.com/DaMccRee/tiaportal-mcp-v19](https://github.com/DaMccRee/tiaportal-mcp-v19)
+- **原始项目**: [https://github.com/heilingbrunner/tiaportal-mcp](https://github.com/heilingbrunner/tiaportal-mcp)
 - [TIA Portal Openness 官方文档](https://support.industry.siemens.com/cs/document/108716692)
 - [Model Context Protocol 规范](https://modelcontextprotocol.io/)
 - [VS Code Extension API](https://code.visualstudio.com/api)
 
 ## 💬 支持
 
-如有问题或建议,请通过 GitHub Issues 反馈。
+如有问题或建议，请通过以下方式反馈：
+
+- GitHub Issues: [https://github.com/DaMccRee/tiaportal-mcp-v19/issues](https://github.com/DaMccRee/tiaportal-mcp-v19/issues)
+- Pull Requests 欢迎！

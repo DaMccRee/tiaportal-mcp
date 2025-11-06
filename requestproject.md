@@ -1,9 +1,10 @@
 
-### 当前TIA Portal 状态
+### TIA Portal 需求
 
 1. 已经安装TIA Portal V19.0
 2. TIAopenness已经安装
 3. .net framework 4.8 已经安装
+
 TIAopenness安装位置：
 C:\Program Files\Siemens\Automation\Portal V19\PublicAPI\V16\Siemens.Engineering.dll
 C:\Program Files\Siemens\Automation\Portal V19\PublicAPI\V17\Siemens.Engineering.dll
