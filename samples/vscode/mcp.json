@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "tiaportal-v19": {
+      "command": "C:\\Users\\<YOUR_USERNAME>\\.vscode\\extensions\\tiaportal-mcp-v19\\srv\\net48\\TiaMcpServer.exe",
+      "args": [
+        "--tia-major-version",
+        "19"
+      ],
+      "env": {
+        "TiaPortalLocation": "C:\\Program Files\\Siemens\\Automation\\Portal V19"
+      }
+    }
+  }
+}

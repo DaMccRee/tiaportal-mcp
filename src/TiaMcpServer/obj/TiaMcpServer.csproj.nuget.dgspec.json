@@ -1,0 +1,83 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj",
+        "projectName": "TiaMcpServer",
+        "projectPath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj",
+        "packagesPath": "C:\\Users\\DHY\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\DHY\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "dependencies": {
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[10.0.0-preview.4.25258.110, )"
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            },
+            "ModelContextProtocol": {
+              "target": "Package",
+              "version": "[0.3.0-preview.4, )"
+            },
+            "Siemens.Collaboration.Net.OperatingSystem.Windows": {
+              "target": "Package",
+              "version": "[3.0.1725521661, )"
+            },
+            "Siemens.Collaboration.Net.TiaPortal.Openness.Resolver": {
+              "target": "Package",
+              "version": "[1.1.1725480302, )"
+            },
+            "Siemens.Collaboration.Net.TiaPortal.Packages.Openness": {
+              "target": "Package",
+              "version": "[19.0.1695802178, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.415\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win7-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

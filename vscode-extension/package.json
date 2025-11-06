@@ -1,0 +1,165 @@
+{
+  "name": "tiaportal-mcp-v19",
+  "displayName": "TIA Portal V19 MCP Server",
+  "description": "Model Context Protocol server for TIA Portal V19 with automatic dependency detection and monitoring",
+  "version": "0.2.1",
+  "publisher": "siemens-automation",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Debuggers"
+  ],
+  "keywords": [
+    "TIA Portal",
+    "MCP",
+    "Model Context Protocol",
+    "Siemens",
+    "PLC",
+    "Automation"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "icon": "resources/icon.png",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tiaportal-mcp",
+          "title": "TIA Portal MCP",
+          "icon": "resources/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "tiaportal-mcp": [
+        {
+          "type": "webview",
+          "id": "tiaportal-mcp.settings",
+          "name": "Settings",
+          "contextualTitle": "TIA Portal MCP Settings"
+        },
+        {
+          "id": "tiaportal-mcp.status",
+          "name": "Server Status"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "tiaportal-mcp.checkDependencies",
+        "title": "TIA Portal MCP: Check Dependencies"
+      },
+      {
+        "command": "tiaportal-mcp.startServer",
+        "title": "TIA Portal MCP: Start Server"
+      },
+      {
+        "command": "tiaportal-mcp.stopServer",
+        "title": "TIA Portal MCP: Stop Server"
+      },
+      {
+        "command": "tiaportal-mcp.restartServer",
+        "title": "TIA Portal MCP: Restart Server"
+      },
+      {
+        "command": "tiaportal-mcp.openSettings",
+        "title": "TIA Portal MCP: Open Settings"
+      },
+      {
+        "command": "tiaportal-mcp.showLogs",
+        "title": "TIA Portal MCP: Show Logs"
+      },
+      {
+        "command": "tiaportal-mcp.installToUserGroup",
+        "title": "TIA Portal MCP: Add User to Siemens TIA Openness Group"
+      },
+      {
+        "command": "tiaportal-mcp.addMcpConfig",
+        "title": "TIA Portal MCP: Add MCP Server Configuration"
+      },
+      {
+        "command": "tiaportal-mcp.removeMcpConfig",
+        "title": "TIA Portal MCP: Remove MCP Server Configuration"
+      }
+    ],
+    "configuration": {
+      "title": "TIA Portal MCP V19",
+      "properties": {
+        "tiaportalMcp.tiaPortalPath": {
+          "type": "string",
+          "default": "C:\\Program Files\\Siemens\\Automation\\Portal V19",
+          "description": "Path to TIA Portal V19 installation"
+        },
+        "tiaportalMcp.serverPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to TiaMcpServer.exe (leave empty to use bundled version)"
+        },
+        "tiaportalMcp.tiaMajorVersion": {
+          "type": "number",
+          "default": 19,
+          "description": "TIA Portal major version"
+        },
+        "tiaportalMcp.autoStart": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically start MCP server on VS Code startup"
+        },
+        "tiaportalMcp.loggingLevel": {
+          "type": "number",
+          "default": 2,
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "enumDescriptions": [
+            "No logging",
+            "Log to stderr",
+            "Log to debug output",
+            "Log to Windows event log"
+          ],
+          "description": "Logging level for MCP server"
+        },
+        "tiaportalMcp.showDetailedLogs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show detailed logs in output panel"
+        },
+        "tiaportalMcp.checkDependenciesOnStartup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check dependencies on VS Code startup"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.24",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.32.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/tiaportal-mcp-v19.git"
+  },
+  "license": "MIT",
+  "directories": {
+    "doc": "docs"
+  },
+  "author": "",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yourusername/tiaportal-mcp-v19/issues"
+  },
+  "homepage": "https://github.com/yourusername/tiaportal-mcp-v19#readme"
+}

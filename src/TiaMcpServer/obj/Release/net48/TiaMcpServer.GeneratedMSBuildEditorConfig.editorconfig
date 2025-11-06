@@ -1,0 +1,5 @@
+is_global = true
+build_property.RootNamespace = TiaMcpServer
+build_property.ProjectDir = C:\Users\DHY\Documents\tiaportal-mcp-v19\src\TiaMcpServer\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
