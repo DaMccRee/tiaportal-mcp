@@ -2,3 +2,5 @@
 /tiaportal-mcp-v19-*.vsix
 exported-blocks/
 .vscode/
+/bin/
+/obj/

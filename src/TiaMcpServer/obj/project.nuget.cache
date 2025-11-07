@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Bm1K/lwNtP4=",
+  "dgSpecHash": "/S03UxuxvUw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj",
+  "projectFilePath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp\\src\\TiaMcpServer\\TiaMcpServer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\DHY\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\10.0.0-preview.4.25258.110\\microsoft.bcl.asyncinterfaces.10.0.0-preview.4.25258.110.nupkg.sha512",
     "C:\\Users\\DHY\\.nuget\\packages\\microsoft.bcl.memory\\9.0.5\\microsoft.bcl.memory.9.0.5.nupkg.sha512",

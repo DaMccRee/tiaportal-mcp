@@ -4600,11 +4600,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj",
+      "projectUniqueName": "C:\\Users\\DHY\\Documents\\tiaportal-mcp\\src\\TiaMcpServer\\TiaMcpServer.csproj",
       "projectName": "TiaMcpServer",
-      "projectPath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\TiaMcpServer.csproj",
+      "projectPath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp\\src\\TiaMcpServer\\TiaMcpServer.csproj",
       "packagesPath": "C:\\Users\\DHY\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp-v19\\src\\TiaMcpServer\\obj\\",
+      "outputPath": "C:\\Users\\DHY\\Documents\\tiaportal-mcp\\src\\TiaMcpServer\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DHY\\AppData\\Roaming\\NuGet\\NuGet.Config"
