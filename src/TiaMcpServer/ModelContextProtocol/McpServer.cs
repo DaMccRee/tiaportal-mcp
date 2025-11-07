@@ -1613,7 +1613,8 @@ namespace TiaMcpServer.ModelContextProtocol
 
         #region documents
 
-        [McpServerTool(Name = "ExportAsDocuments"), Description("Export as documents (.s7dcl/.s7res) from a block in the plc software to path")]
+        // Document export/import tools are disabled (not exposed to MCP agents)
+        // [McpServerTool(Name = "ExportAsDocuments"), Description("Export as documents (.s7dcl/.s7res) from a block in the plc software to path")]
         public static ResponseExportAsDocuments ExportAsDocuments(
             [Description("softwarePath: defines the path in the project structure to the plc software")] string softwarePath,
             [Description("blockPath: defines the path in the project structure to the block")] string blockPath,
@@ -1649,7 +1650,7 @@ namespace TiaMcpServer.ModelContextProtocol
             }
         }
 
-        [McpServerTool(Name = "ExportBlocksAsDocuments"), Description("Export as documents (.s7dcl/.s7res) from blocks in the plc software to path")]
+        // [McpServerTool(Name = "ExportBlocksAsDocuments"), Description("Export as documents (.s7dcl/.s7res) from blocks in the plc software to path")]
         public static async Task<ResponseExportBlocksAsDocuments> ExportBlocksAsDocuments(
             IMcpServer server,
             RequestContext<CallToolRequestParams> context,
@@ -1819,7 +1820,7 @@ namespace TiaMcpServer.ModelContextProtocol
             }
         }
 
-        [McpServerTool(Name = "ImportFromDocuments"), Description("Import program block from SIMATIC SD documents (.s7dcl/.s7res) into PLC software (V20+)")]
+        // [McpServerTool(Name = "ImportFromDocuments"), Description("Import program block from SIMATIC SD documents (.s7dcl/.s7res) into PLC software (V20+)")]
         public static ResponseImportFromDocuments ImportFromDocuments(
             [Description("softwarePath: defines the path in the project structure to the plc software")] string softwarePath,
             [Description("groupPath: optional path within the PLC program where the block should be placed (empty for root)")] string groupPath,
@@ -1881,7 +1882,7 @@ namespace TiaMcpServer.ModelContextProtocol
             }
         }
 
-        [McpServerTool(Name = "ImportBlocksFromDocuments"), Description("Import program blocks from SIMATIC SD documents (.s7dcl/.s7res) into PLC software (V20+)")]
+        // [McpServerTool(Name = "ImportBlocksFromDocuments"), Description("Import program blocks from SIMATIC SD documents (.s7dcl/.s7res) into PLC software (V20+)")]
         public static async Task<ResponseImportBlocksFromDocuments> ImportBlocksFromDocuments(
             IMcpServer server,
             RequestContext<CallToolRequestParams> context,
