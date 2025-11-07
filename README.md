@@ -13,6 +13,16 @@
 - 🔧 **自动修复建议** - 检测到问题时提供修复指导
 - 📦 **内置服务器** - 扩展已包含编译好的 TiaMcpServer.exe
 
+```mermaid
+graph LR
+
+A[Ai] --> B[TIAPORTAL MCP Server]
+B --> C[Siemens.Engneer.dll]
+C --> D[TIA Portal]
+D --> E[Device]
+
+```
+
 ## 📁 项目结构
 
 ```text
