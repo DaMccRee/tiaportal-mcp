@@ -1,12 +1,12 @@
-# TIA Portal V19 MCP Server - VS Code Extension
+# TIA Portal  MCP Server - VS Code Extension
 
-基于 TIA Portal V19 的 Model Context Protocol (MCP) 服务器 VS Code 扩展实现。
+基于 TIA Portal  的 Model Context Protocol (MCP) 服务器 VS Code 扩展实现。
 
-本扩展将 TIA Portal V19 MCP Server 打包为 VS Code 扩展,提供自动依赖检测、可视化配置界面和实时运行监控。
+本扩展将 TIA Portal  MCP Server 打包为 VS Code 扩展,提供自动依赖检测、可视化配置界面和实时运行监控。
 
 ## ✨ VS Code 扩展功能
 
-- 🔍 **自动依赖检测** - 自动检测 TIA Portal V19、.NET Framework 4.8、用户组权限等
+- 🔍 **自动依赖检测** - 自动检测 TIA Portal .NET Framework 4.8、用户组权限等
 - ⚙️ **可视化配置界面** - 侧边栏提供友好的参数设置面板
 - 📊 **实时运行监控** - 输出面板显示详细的服务器运行状态和日志
 - 🚀 **一键启动/停止** - 快捷命令管理 MCP 服务器
@@ -96,10 +96,10 @@ dotnet build --configuration Release
 
 ## 功能特性
 
-本 MCP 服务器专为 TIA Portal V19 设计,提供以下功能:
+本 MCP 服务器专为 TIA Portal  设计,提供以下功能:
 
 ### 核心功能
-- ✅ 连接到 TIA Portal V19 实例
+- ✅ 连接到 TIA Portal  实例
 - ✅ 打开/关闭/保存项目和会话
 - ✅ 获取项目结构树形视图
 - ✅ 设备和设备项信息查询
@@ -119,7 +119,7 @@ dotnet build --configuration Release
 - ✅ 按正则表达式筛选 Type
 
 ### 文档操作（V19 有限支持）
-- ⚠️ V19 版本不支持 SIMATIC SD 文档格式（.s7dcl/.s7res）
+- ⚠️  版本不支持 SIMATIC SD 文档格式（.s7dcl/.s7res）
 - ⚠️ 文档导入/导出功能需要 TIA Portal V20 或更高版本
 
 ## 🚀 快速开始 (VS Code 扩展方式)
@@ -411,6 +411,13 @@ dotnet build -c Release -f net48
 - ✅ 完整的 Type 导入/导出（XML 格式）
 - ✅ 项目编译和管理
 - ✅ 设备配置操作
+备注：
+```
+  Siemens.Engineering.dll 组件由于 V16、V17 和 V18 的 Siemens.Engineering.dll 组件包含在交付范围内，因此基于 V16、V17 和 V18 的应用程序在 V19 中无需修改即可运行。
+同样的，基于博图V19开发的MCP同样可以直接支持博图V20，但不支持其特有功能，因为API引用是V19版本的。以上可以通过插件侧边栏 “TIA Major Version”实现不同版本博图的适配
+要使用 V19 的功能，您必须集成 V19 的 dll 并重新编译应用程序。Siemens.Engineering.dll 组件可在安装目录下的"PublicAPI[版本]\"中找到。
+例如，V19 的 dll 可以在"C:\Program Files\Siemens\Automation\Portal V*\PublicAPI\V19\Siemens.Engineering.dll"找到
+```
 
 ## 故障排除
 
